@@ -14,5 +14,6 @@ public class PingController {
     @ResponseStatus(HttpStatus.OK)
     public void ping(){
         System.out.println("Tudo funcionando");
+        System.out.println("Testando devtools 2");
     }
 }
