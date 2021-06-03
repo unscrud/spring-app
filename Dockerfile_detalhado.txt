@@ -1,0 +1,61 @@
+https://www.youtube.com/watch?v=5QGexrfqu60
+Dockerfile deve necessáriamente este nome por convenção
+
+A primeira linha conterá o comando FROM que indica a imagem baseque será usada para
+criação da nossa imagem personalizada. Exemplo: 
+FROM openjdk
+
+Outro comando comum é o COPY que copia um arquivo para dentro do container que será criado. Exemplo:
+COPY arquivo.txt /app/arquivo.txt
+
+Similar ao COPY existe o ADD que pode buscar um arquivo remoto para dentro do container e ainda
+descompacta um arquivo tar. Exemplo:
+ADD aula.tar.gz /app/aula/
+
+Já o comando RUN executa um comando de terminal assim como o comando CMD, só que o CMD é executado
+após a execução do container. Exemplos:
+RUN apt update && apt install ...
+CMD ["ls","mkdir teste","cd teste","pwd"]
+
+Se usarmos o comando ENTRYPOINT, então o CMD será usado como parâmetro para este
+No exemplo abaixo ao executarmos o ls será exibido o conteúdo de /app
+CMD ["/app"]
+ENTRYPOINT ["ls"]
+
+O comando WORKDIR define o diretório raiz do nosso container. Exemplo:
+WORKDIR /app
+
+ENV como o nome sugere estabelece uma variável de ambiente. Exemplo:
+ENV MINHA_APLICACAO=app.jar
+
+Adicionalmente a variável de ambiente criada dentro do Dockerfile pode ser utilizada dentro do proprio dockerfile.
+Exemplo abaixo usa a env do exemplo anterior:
+COPY $MINHA_APLICAÇÃO /app
+
+Para expor uma porta do container ao ser iniciado utilizamos o EXPOSE, assim:
+EXPOSE 8080
+
+Segue uma amostra de docker file que usando a imagem openjdk como base, cria uma pasta aula dentro de app,
+seta produto.jar para a variável APP_NAME e depois copia esse jar para a pasta criada.
+Por fim expõe a porta 8081 e executa o comando "java -jar <<caminho do jar>>".
+
+FROM openjdk
+RUM mkdir -p /app/aula
+ENV APP_NAME=produto.jar
+COPY ${APP_NAME} /app/aula
+EXPOSE 8081
+ENTRYPOINT ["java","-jar","/app/aula/produtos.jar"] 
+
+Obs: Note que no comando ENTRYPOINT não é possível usar uma variável de ambiente
+
+Na sequência utilizaremos o comando: 
+"docker build -t aplicacao:1.0 ."  
+Com o parametro "-t aplicacao:1.0" indica o nome que a imagem receberá e a tag que será setada.
+O ponto isolado indica o diretorio onde o comando procurará o dockerfile.
+
+O comando acima deve ser executado no terminal e no mesmo diretório em que está o dockerfile para criar a imagem. 
+Poderemos ver a imagem criada com o comando "docker images" no terminal.
+
+Por fim poderemos executar a imagem com um "docker run -p 8080:8081 aplicacao:1.0"
+
+obs: caso eu consiga buidar uma imagem incorretamente eu posso apagá-la com o comando "docker rmi -f aplicacao:1.0"
